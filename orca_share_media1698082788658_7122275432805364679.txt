@@ -1,192 +1,137 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import { Button, FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import React, { useState } from "react";
 
-const YourComponent = () => {
-  const [tasks, setTasks] = useState([]);
-  const [taskText, setTaskText] = useState('');
+export default function App() {
 
-  const addTask = () => {
-    if (taskText === '') {
-      alert('Please Enter a Task!');
+// Locals
+  const[todo, setTodo] = useState("");
+  const[todolist, setTodoList] = useState([]);
+  const [editedTodo, setEditedTodo] = useState(null);
+
+// Adding Function
+  const handleAddTodo = () => {
+    if(todo == ""){
       return;
-    } 
+    }
 
-    setTasks([...tasks, { text: taskText, done: false }]);
-    setTaskText('');
+    setTodoList([...todolist, {id: Date.now().toString(),title: todo}]);
+    setTodo("");
+
   };
 
-  const markAsDone = (index) => {
-    const updatedTasks = [...tasks];
-    updatedTasks[index].done = !updatedTasks[index].done;
-    setTasks(updatedTasks);
-  };
+// Delete Functions
+const handleDeleteTodo = (id) => {
+  const updateTodoList = todolist.filter((todo) =>todo.id !==id);
 
-  const deleteTask = (index) => {
-    const updatedTasks = [...tasks];
-    updatedTasks.splice(index, 1);
-    setTasks(updatedTasks);
-  };
-
-  return (
-    <View style={styles.content}>
-      <View style={styles.container}>
-        <Text style={styles.title}>Task Creator</Text>
-        <View style={styles.add}>
-          <View style={styles.bar}>
-            <TextInput
-              style={styles.input}
-              placeholder="Task to be done ..."
-              value={taskText}
-              onChangeText={(text) => setTaskText(text)}
-            />
-          </View>
-          <View style={styles.btn}>
-          <TouchableOpacity
-            style={styles.addbtn} // Styling for the "Add" button
-            onPress={addTask}
-          >
-            <Text style={styles.addText}>Add</Text>
-          </TouchableOpacity>
-          </View>
-        </View>
-      </View>
-      <ScrollView style={styles.scrollView}>
-      {tasks.map((task, index) => (
-        
-        <View key={index} style={styles.task}>
-          <Text style={task.done ? styles.doneTask : styles.taskText}>{task.text}</Text>
-          <TouchableOpacity onPress={() => markAsDone(index)} style={task.done ? styles.undoneButton : styles.doneButton}>
-            <Text>{task.done ? 'Undone' : 'Done'}</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => deleteTask(index)} style={styles.deleteButton}>
-            <Text>Delete</Text>
-          </TouchableOpacity>
-        </View>
-        
-      ))}
-      </ScrollView>
-    </View>
-  );
+  setTodoList(updateTodoList);
 };
 
-const styles = StyleSheet.create({
-  content: {
-    flexDirection: 'column',
-    flex: 1,
-    alignItems: 'center',
-    backgroundColor: 'cadetblue',
-  },
-  container: {
-    marginTop: 70,
-    alignItems: 'center',
-    flexDirection: 'column',
-    borderRadius: 5,
-    borderWidth: 2,
-    borderColor: 'aliceblue',
-    width: 'auto', 
-    marginHorizontal: 'auto', 
-  },
-  //   container: {
-  //     display: 'flex',
-  //     flexDirection: 'column',
-  //     borderRadius: '5px',
-  //     borderStyle: 'solid', 
-  //     borderWidth: 'medium',
-  //     borderColor: 'aliceblue',
-  //     width: 'fit-content',
-  //     margin: 'auto',
-  // },
-  
-  title: {
-    fontSize: 20,
-    textAlign: 'center',
-    color: 'aliceblue',
-    fontWeight: 'bold',
-  },
-  add: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 6,
-    display: 'flex',
-    flexDirection: 'row',
-    backgroundColor: 'aliceblue',
-  },
+// Edit Functions
+const handleEditTodo = (todo) => {
+  setEditedTodo(todo);
+  setTodo(todo.title);
+};
 
-  bar: {
-    padding: 5,
-    
-  },
-  btn: {
-    padding: 5,
-  },
-  int: {
-    width: 240,
-  },
-  input: {
-    flex: 1,
-    height: 40,
-    width: 250,
-    borderWidth: 1,
-    padding: 10, 
-    borderColor: 'rgb(65, 108, 110)',
-  },
+// Update Functions
+const handleUpdateTodo = () => {
+  const updatedTodos = todolist.map((item)=>{
 
-  addbtn: {
-    backgroundColor: 'cadetblue',
-    borderRadius: 5,
-    width: 40,
-    borderWidth: 2,
-    padding: 5,
-    cursor: 'pointer',
-    shadowColor: 'rgb(65, 108, 110)',
-    shadowOffset: { width: 0, height: 4 },
-  },
-  addButton: {
-    backgroundColor: 'cadetblue',
-    borderRadius: 5,
-    padding: 5,
-    marginRight: 2,
-  },
+    if(item.id == editedTodo.id){
+      return { ...item, title: todo};
+    }
+    return item
 
-  task: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginTop: 6,
-    padding: 10,
-    borderWidth: 1,
-    borderColor: 'aliceblue',
-    borderRadius: 5,
-    width: 315,
-    backgroundColor: 'cadetblue',
-  },
-  taskText: {
-    flex: 1,
-    fontSize: 16,
-    color:'aliceblue',
-  },
-  doneTask: {
-    flex: 1,
-    fontSize: 16,
-    textDecorationLine: 'line-through',
-  },
-  doneButton: {
-    backgroundColor: '#A0D8B3',
-    borderRadius: 5,
-    padding: 5,
-    marginRight: 2,
-  },
-  undoneButton: { 
-    backgroundColor: '#7ba589',
-    borderRadius: 5,
-    padding: 5,
-    marginRight: 2,
-  },
-  deleteButton: {
-    backgroundColor: '#E06469', 
-    borderRadius: 5,
-    padding: 5,
-  },
-});
+  });
+  setTodoList(updatedTodos)
+  setEditedTodo(null)
+  setTodo("");
+}
 
-export default YourComponent; 
+// Buttons Functions and  Render
+  const renderTodos = ({item, index}) => {
+    return (
+      <View style={{
+        backgroundColor: 'blue',
+        borderRadius: 5,
+        padding: 6,
+        marginTop: 5,
+        flexDirection: "row",
+        alignItems: 'center',
+      }}>
+        {/* EDIT BUTTON */}
+        <Button title='edit'
+        onPress={() => handleEditTodo(item)}/>
+        {/* DELETE BUTTON */}
+        <Button title='delete' 
+        onPress = { () => handleDeleteTodo(item.id)}/>
+
+        <Text style={{
+          color: 'white',
+          fontSize: 20,
+          marginLeft: 15,
+          flex: 2,
+        }}>{item.title}</Text>
+      </View>
+    )
+  }
+  return (
+    // Title and INPUT TEXT
+    <View style={{ marginHorizontal: 16}}>
+      <Text style={{marginTop: 10,}}>TODO LIST</Text>
+      <TextInput
+      style={{
+        borderWidth: 2,
+        borderBlockColor: 'black',
+        borderRadius: 5,
+        paddingVertical: 6,
+        marginTop: 5,
+        }}
+        placeholder='Add Task'
+        value={todo}
+        // For catching user text and adding 
+        onChangeText={(userText) => setTodo(userText)}
+        />
+
+      {editedTodo ? (
+        <TouchableOpacity 
+        style={{ 
+          backgroundColor: 'blue',
+          borderRadius: 6,
+          paddingVertical: 12,
+          marginTop: 20,
+          }}
+          // creating call function to Update
+          onPress={() => handleUpdateTodo()}
+          >
+          <Text style={{
+            color: 'white',
+            fontSize: 20,
+            textAlign: 'center',
+          }}> Save </ Text>  
+        </TouchableOpacity>
+        ):(
+        <TouchableOpacity 
+        style={{ 
+          backgroundColor: 'blue',
+          borderRadius: 6,
+          paddingVertical: 12,
+          marginTop: 20,
+          }}
+          // creating call function to Add
+          onPress={() => handleAddTodo()}
+          >
+          <Text style={{
+            color: 'white',
+            fontSize: 20,
+            textAlign: 'center',
+          }}> ADD </ Text>  
+        </TouchableOpacity>
+      )
+      }
+
+      <FlatList data={todolist} renderItem={renderTodos}/>
+        
+    </View>
+
+  );
+}
